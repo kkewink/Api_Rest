@@ -63,8 +63,47 @@ const clientController = {
         }
     },
     getOne: async(req,res) =>{
+        try {
+            const {id} = req.params;
 
+            const client = await clientService.getById(id);
+
+            if(!client){
+                return res.status(400).json({
+                    msg:'Client nao encontrado'
+                });
+            }
+            return res.status(200).json({
+                msg:'Client encontrado',
+                client
+            });
+        } catch (error) {
+            return res.status(500).json({
+                msg:'Erro ao puxar um'
+            });
+        }
     },
+    delete: async(req,res) =>{
+        try {
+            const {id} = req.params;
+            const client = await clientService.delete(id);
+
+            if(!user) {
+                return res.status(400).json({
+                    msg:'Cliente nao encontrado'
+                });
+            }
+
+            return res.status(200).json({
+                msg:'Cliente deletado com sucesso'
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                msg:'Ocorreu um erro no servidor'
+            });
+        }
+    }
     
 };
 
