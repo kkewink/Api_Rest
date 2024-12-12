@@ -10,9 +10,16 @@ const clientController = {
 
             const client = await clientService.create(data);
 
-            return res.status(201).json({
-                msg:"Client criado com sucesso",
-                client,
+            if(client.error){
+                return res.status(client.code).json({
+                    code : client.code,
+                    message : client.error.message
+                })
+            }
+
+            return res.status(client.code).json({
+                msg : client.message,
+                client : client.client
             });
 
         } catch (error) {
@@ -50,13 +57,15 @@ const clientController = {
     },
     getAll: async(req,res) =>{
         try {
+
             const clients = await clientService.getAll();
 
             return res.status(200).json({
                 msg:'Todos os clientes',
-                clients
+                clients : clients.clients
             });
         } catch (error) {
+            console.error(error);
             return res.status(500).json({
                 msg: 'Ocorreu um erro no Servidor'
             });
@@ -66,18 +75,23 @@ const clientController = {
         try {
             const {id} = req.params;
 
-            const client = await clientService.getById(id);
+            const client = await clientService.getOne(id);
 
-            if(!client){
-                return res.status(400).json({
-                    msg:'Client nao encontrado'
-                });
+            if(client.error){
+                return res.status(client.code).json({
+                    code : client.code,
+                    message : client.error.message
+                })
             }
-            return res.status(200).json({
-                msg:'Client encontrado',
-                client
+
+            return res.status(client.code).json({
+                msg : client.message,
+                client : client.client
             });
+
         } catch (error) {
+            console.log(error);
+            
             return res.status(500).json({
                 msg:'Erro ao puxar um'
             });
@@ -88,9 +102,10 @@ const clientController = {
             const {id} = req.params;
             const client = await clientService.delete(id);
 
-            if(!user) {
+            if(!client) {
                 return res.status(400).json({
                     msg:'Cliente nao encontrado'
+                    
                 });
             }
 

@@ -1,39 +1,79 @@
-const { getAll, getOne } = require('../controllers/ClientController');
 const Client = require('../models/client');
+const Account = require('../models/account')
 
-const clientService = {
-    create: async (data) => {
+const ClientService = {
+    create: async (dataClient) => {
         try {
-            console.log(data)
-            const client = await Client.create(data);
 
-            return client
-        } catch (error) {
-            console.error(error);
-            throw new Error('Ocorreu um erro ao Criar Client');
-        }
-    },
-    update: async (id, data) => {
-        try {
-            const client = await Client.findByPk(id);
-            if (!client) {
-                return null;
+            const isEmailExist = await Client.findOne({where : {email : dataClient.email}});
+
+            if (isEmailExist) {
+                return {
+                    code : 400,
+                    error : {
+                        message : "O Email ja existe"
+                    }
+                }
             }
 
-            return await client.update(data);
+
+            const client = await Client.create(dataClient);
+
+            return {
+                code : 201,
+                message : "Cliente criado com sucesso",
+                client : client
+            }
+        } catch (error) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    },
+    update: async (_idClient, dataClient) => {
+        try {
+            const client = await Client.findByPk(_idClient);
+            if (!client) {
+                return res.error(404).json({
+                    msg: "Cliente não encontrado",
+                });
+            }
+
+            const isEmailExist = await Client.findOne({ email: dataClient.email });
+            if (isEmailExist) {
+                return res.status(409).json({
+                    msg: "Email ja existe",
+                });
+            }
+
+            await client.update(dataClient);
+            return res.status(200).json({
+                msg: "Cliente atualizado com sucesso",
+            })
 
         } catch (error) {
+            console.error(error);
             throw new Error('Ocorreu um erro ao Atualizar Client');
         }
     },
-    getById: async (id) => {
+    getOne: async (_idClient) => {
         try {
-            const client = await Client.findByPk(id);
+            const client = await Client.findByPk(_idClient);
 
             if (!client) {
-                return null;
+                return {
+                    code : 404,
+                    error : {
+                        message : "Client not found"
+                    }
+                }
             }
-            return client;
+
+            return {
+                code : 200,
+                message : "Client achad",
+                client : client
+            }
+
         } catch (error) {
             console.error(error);
             throw new Error('Ocorre um erro ao buscar unico Client');
@@ -41,20 +81,38 @@ const clientService = {
     },
     getAll: async () => {
         try {
-            const client = await client.findAll();
-            return clients
+            const clients = await Client.findAll();
+            return {
+                code : 200,
+                message : "Todas os clientes",
+                clients : clients
+            }
+
         } catch (error) {
+            console.error(error);
             throw new Error('Ocorreu um erro ao buscar todos Clientes');
         }
     },
-    delete: async (id) => {
+    delete: async (_idClient) => {
         try {
-            const client = await Client.findByPk(id);
+            const client = await Client.findByPk(_idClient);
             if (!client) {
-                return null;
+                return res.error(404).json({
+                    msg: "Cliente não encontrado",
+                });
             }
 
-            return await client.destroy();
+            const account = await Account.findOne({ _idClient: _idClient });
+            if (account) {
+                await account.deleteOne();
+            }
+
+            await client.deleteOne();
+            return res.status(200).json({
+                msg: "Cliente deletado",
+                client: client,
+            });
+
         } catch (error) {
             console.error(error);
             throw new Error('Ocorreu um erro ao deletar o Client');
@@ -62,4 +120,4 @@ const clientService = {
     }
 }
 
-module.exports = clientService;
+module.exports = ClientService;
