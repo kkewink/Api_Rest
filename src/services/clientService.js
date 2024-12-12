@@ -5,24 +5,23 @@ const ClientService = {
     create: async (dataClient) => {
         try {
 
-            const isEmailExist = await Client.findOne({where : {email : dataClient.email}});
+            const isEmailExist = await Client.findOne({ where: { email: dataClient.email } });
 
             if (isEmailExist) {
                 return {
-                    code : 400,
-                    error : {
-                        message : "O Email ja existe"
+                    code: 400,
+                    error: {
+                        message: "O Email ja existe"
                     }
                 }
             }
 
-
             const client = await Client.create(dataClient);
 
             return {
-                code : 201,
-                message : "Cliente criado com sucesso",
-                client : client
+                code: 201,
+                message: "Cliente criado com sucesso",
+                client: client
             }
         } catch (error) {
             console.error(error);
@@ -33,16 +32,22 @@ const ClientService = {
         try {
             const client = await Client.findByPk(_idClient);
             if (!client) {
-                return res.error(404).json({
-                    msg: "Cliente não encontrado",
-                });
+                return {
+                    code: 400,
+                    error: {
+                        message: "Cliente não existe"
+                    }
+                }
             }
 
             const isEmailExist = await Client.findOne({ email: dataClient.email });
             if (isEmailExist) {
-                return res.status(409).json({
-                    msg: "Email ja existe",
-                });
+                return {
+                    code: 400,
+                    error: {
+                        message: "O Email ja existe"
+                    }
+                }
             }
 
             await client.update(dataClient);
@@ -61,17 +66,17 @@ const ClientService = {
 
             if (!client) {
                 return {
-                    code : 404,
-                    error : {
-                        message : "Client not found"
+                    code: 404,
+                    error: {
+                        message: "Client not found"
                     }
                 }
             }
 
             return {
-                code : 200,
-                message : "Client achad",
-                client : client
+                code: 200,
+                message: "Client achad",
+                client: client
             }
 
         } catch (error) {
@@ -83,9 +88,9 @@ const ClientService = {
         try {
             const clients = await Client.findAll();
             return {
-                code : 200,
-                message : "Todas os clientes",
-                clients : clients
+                code: 200,
+                message: "Todas os clientes",
+                clients: clients
             }
 
         } catch (error) {
@@ -97,9 +102,12 @@ const ClientService = {
         try {
             const client = await Client.findByPk(_idClient);
             if (!client) {
-                return res.error(404).json({
-                    msg: "Cliente não encontrado",
-                });
+                return {
+                    code: 404,
+                    error: {
+                        message: "Client não encontrado"
+                    }
+                }
             }
 
             const account = await Account.findOne({ _idClient: _idClient });

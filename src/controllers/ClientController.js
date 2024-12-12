@@ -1,7 +1,7 @@
 const clientService = require("../services/clientService");
 
 const clientController = {
-    create: async(req,res) =>{
+    create: async (req, res) => {
         try {
             const data = {
                 nome: req.body.nome,
@@ -10,59 +10,59 @@ const clientController = {
 
             const client = await clientService.create(data);
 
-            if(client.error){
+            if (client.error) {
                 return res.status(client.code).json({
-                    code : client.code,
-                    message : client.error.message
+                    code: client.code,
+                    message: client.error.message
                 })
             }
 
             return res.status(client.code).json({
-                msg : client.message,
-                client : client.client
+                msg: client.message,
+                client: client.client
             });
 
         } catch (error) {
             console.error(error);
             return res.status(500).json({
-                msg:'Erro ao tentar criar o Client'
+                msg: 'Erro ao tentar criar o Client'
             });
         }
     },
-    update: async(req,res) =>{
-        try{
-            const {id} = req.params;
-            
+    update: async (req, res) => {
+        try {
+            const { id } = req.params;
+
             const data = {
-                nome:req.body.nome,
+                nome: req.body.nome,
                 email: req.body.email
             }
 
-            const client = await clientService.update(id,data);
+            const client = await clientService.update(id, data);
 
-            if(!client){
+            if (!client) {
                 return res.status(400).json({
-                    msg:'Cliente não encontrado'
+                    msg: 'Cliente não encontrado'
                 });
             }
 
             return res.status(200).json({
-                msg:"Cliente atualizado com sucesso",
+                msg: "Cliente atualizado com sucesso",
             })
-        } catch(error){
+        } catch (error) {
             return res.status(500).json({
-                msg:'Erro ao atualizaro o Client'
+                msg: 'Erro ao atualizaro o Client'
             });
         }
     },
-    getAll: async(req,res) =>{
+    getAll: async (req, res) => {
         try {
 
             const clients = await clientService.getAll();
 
             return res.status(200).json({
-                msg:'Todos os clientes',
-                clients : clients.clients
+                msg: 'Todos os clientes',
+                clients: clients.clients
             });
         } catch (error) {
             console.error(error);
@@ -71,55 +71,55 @@ const clientController = {
             });
         }
     },
-    getOne: async(req,res) =>{
+    getOne: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
 
             const client = await clientService.getOne(id);
 
-            if(client.error){
+            if (client.error) {
                 return res.status(client.code).json({
-                    code : client.code,
-                    message : client.error.message
+                    code: client.code,
+                    message: client.error.message
                 })
             }
 
             return res.status(client.code).json({
-                msg : client.message,
-                client : client.client
+                msg: client.message,
+                client: client.client
             });
 
         } catch (error) {
             console.log(error);
-            
+
             return res.status(500).json({
-                msg:'Erro ao puxar um'
+                msg: 'Erro ao puxar um'
             });
         }
     },
-    delete: async(req,res) =>{
+    delete: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const client = await clientService.delete(id);
 
-            if(!client) {
+            if (!client) {
                 return res.status(400).json({
-                    msg:'Cliente nao encontrado'
-                    
+                    msg: 'Cliente nao encontrado'
+
                 });
             }
 
             return res.status(200).json({
-                msg:'Cliente deletado com sucesso'
+                msg: 'Cliente deletado com sucesso'
             });
         } catch (error) {
             console.error(error);
             return res.status(500).json({
-                msg:'Ocorreu um erro no servidor'
+                msg: 'Ocorreu um erro no servidor'
             });
         }
     }
-    
+
 };
 
 module.exports = clientController;

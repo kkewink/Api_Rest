@@ -1,16 +1,16 @@
-const {DataTypes} = require("sequelize");
+const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const Account = sequelize.define('Account', {
-    _idClient:{
+    _idClient: {
         type: DataTypes.STRING,
         require: true,
         unique: true,
     },
-    saldo:{
+    saldo: {
         type: DataTypes.DECIMAL,
         require: true,
-        allowNull:false,
+        allowNull: false,
     },
 });
 
